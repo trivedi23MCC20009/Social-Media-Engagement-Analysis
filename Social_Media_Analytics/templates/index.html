@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Youtube Video Analytics</title>
+    <link href="/static/styles.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url('/static/i.webp'); /* Background image */
+            background-size: cover; /* Cover the entire background */
+            background-position: center; /* Center the image */
+            font-family: 'Arial', sans-serif;
+        }
+        h1, h2 {
+            color: #ff4757; /* Bright red color */
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* White background with transparency */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            margin-top: 30px;
+        }
+        .btn-primary {
+            background-color: #1e90ff; /* Dodger blue */
+            border-color: #1e90ff;
+        }
+        .btn-primary:hover {
+            background-color: #1c7ed6; /* Darker blue on hover */
+        }
+        .btn-secondary {
+            background-color: #003366; /* Dark blue for Contact Us button */
+            border-color: #003366;
+        }
+        .btn-secondary:hover {
+            background-color: #002244; /* Darker blue on hover */
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .list-group-item {
+            font-size: 16px;
+        }
+        .comment-sentiment {
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .comment-sentiment.positive {
+            background-color: #d4edda; /* Light green */
+        }
+        .comment-sentiment.negative {
+            background-color: #f8d7da; /* Light red */
+        }
+        .comment-sentiment.neutral {
+            background-color: #ffeeba; /* Light yellow */
+        }
+        /* Enhanced modal styles */
+        .modal-content {
+            background-color: #fffae6; /* Light yellow background */
+            border: 2px solid #ffcc00; /* Gold border */
+        }
+        .modal-header {
+            background-color: #ffcc00; /* Gold header */
+            color: #fff; /* White text */
+        }
+        .modal-title {
+            font-weight: bold;
+        }
+        .mt-2 {
+            margin-top: 10px; /* Add space between buttons */
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Youtube Video Analytics</h1>
+
+        <!-- Form to input YouTube Video ID -->
+        <form action="/analyze" method="post">
+            <div class="form-group">
+                <label for="video_id">YouTube Video ID:</label>
+                <input type="text" id="video_id" name="video_id" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Analyze</button>
+        </form>
+{% if video_data and sentiment_analysis %}
+    <a href="/download_report?video_data={{ video_data | tojson }}&sentiment_analysis={{ sentiment_analysis | tojson }}" class="btn btn-primary btn-block">Download Report as PDF</a>
+    <button class="btn btn-secondary btn-block mt-2" data-toggle="modal" data-target="#contactDetailsModal">Contact Us</button>
+{% else %}
+    <button class="btn btn-primary btn-block" disabled>Download Report as PDF</button>
+    <button class="btn btn-secondary btn-block mt-2" disabled>Contact Us</button>
+{% endif %}
+
+        {% if error_message %}
+            <div class="alert alert-danger mt-4">
+                <strong>Error:</strong> {{ error_message }}
+            </div>
+        {% endif %}
+
+        {% if video_data %}
+            <h2 class="mt-4">Video Information</h2>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Title:</strong> {{ video_data.title }}</li>
+                <li class="list-group-item"><strong>Views:</strong> {{ video_data.views }}</li>
+                <li class="list-group-item"><strong>Likes:</strong> {{ video_data.likes }}</li>
+                <li class="list-group-item"><strong>Comments Count:</strong> {{ video_data.comments }}</li>
+            </ul>
+
+            <h2 class="mt-4">Sentiment Analysis of Comments</h2>
+            {% if sentiment_analysis is not none %}
+                <ul class="list-group" id="sentiment-results">
+                    {% for result in sentiment_analysis %}
+                        <li class="list-group-item comment-sentiment {{ result.sentiment | lower }} sentiment-item">
+                            <strong>Comment:</strong> {{ result.comment }}<br>
+                            <strong>Sentiment:</strong> {{ result.sentiment }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No comments found or failed sentiment analysis.</p>
+            {% endif %}
+
+            <!-- Section to display the pie chart -->
+            <h2 class="mt-4">Sentiment Analysis Pie Chart & Bar Graph of latest 10 comments</h2>
+            {% if graph_html %} 
+                <div>{{ graph_html | safe }}</div>
+            {% endif %}
+            {% if bar_graph_html %}
+                <div>{{ bar_graph_html | safe }}</div>
+
+                <div>{{ graph_html | safe }}</div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Contact Details Modal -->
+    <div class="modal fade" id="contactDetailsModal" tabindex="-1" role="dialog" aria-labelledby="contactDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactDetailsModalLabel">Contact Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Name:</strong> Keshav Trivedi</p>
+                    <p><strong>Email:</strong> keshavtrivedi761@gmail.com</p>
+                    <p><strong>Phone:</strong> +91-9044194542</p>
+
+                    <p><strong>Name:</strong> Khushi Keservani</p>
+                    <p><strong>Email:</strong> khushikeservani1719@gmail.com</p>
+                    <p><strong>Phone:</strong> +91-8957371956</p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

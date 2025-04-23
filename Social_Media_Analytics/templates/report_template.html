@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Analysis Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #ff4757;
+        }
+        h2 {
+            color: #1e90ff;
+        }
+        .sentiment {
+            margin: 10px 0;
+        }
+        .positive {
+            color: green;
+        }
+        .negative {
+            color: red;
+        }
+        .neutral {
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video Analysis Report</h1>
+    <h2>Video Information</h2>
+    <p><strong>Title:</strong> {{ video_data.title }}</p>
+    <p><strong>Views:</strong> {{ video_data.views }}</p>
+    <p><strong>Likes:</strong> {{ video_data.likes }}</p>
+    <p><strong>Comments Count:</strong> {{ video_data.comments }}</p>
+
+    <h2>Sentiment Analysis of Comments</h2>
+    <div>
+        {% for result in sentiment_analysis %}
+            <div class="sentiment {{ result.sentiment | lower }}">
+                <strong>Comment:</strong> {{ result.comment }}<br>
+                <strong>Sentiment:</strong> {{ result.sentiment }}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
